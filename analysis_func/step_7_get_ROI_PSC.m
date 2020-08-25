@@ -8,7 +8,6 @@ if ~exist('machine_id', 'var')
     machine_id = 2; % 0: container ;  1: Remi ;  2: Beast
 end
 
-space = 'MNI';
 % 'MNI' or  'T1w' (native)
 if ~exist('space', 'var')
     space = 'T1w';
@@ -81,7 +80,7 @@ end
 time_course = {};
 percent_signal_change = {};
 
-for i_subj = 1 % 2:nb_subjects
+for i_subj = 1:nb_subjects
 
     fprintf('running %s\n', folder_subj{i_subj});
 

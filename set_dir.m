@@ -3,7 +3,7 @@ function [data_dir, code_dir, output_dir, fMRIprep_DIR] = set_dir(machine_id)
     % are on
 
     if nargin < 1
-        machine_id = 0;
+        machine_id = 2;
     end
 
     switch machine_id

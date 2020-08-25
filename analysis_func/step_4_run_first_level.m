@@ -9,12 +9,7 @@
 %  - get_cfg_GLMS_to_run.m: sets the GLM that will actually be run
 
 %% parameters
-clear;
 clc;
-
-debug_mode = 0;
-
-space = 'MNI';
 
 if ~exist('machine_id', 'var')
     machine_id = 2; % 0: container ;  1: Remi ;  2: Beast
@@ -30,8 +25,7 @@ if ~exist('estimate_GLM', 'var')
 end
 
 if debug_mode
-    space = 'MNI';
-    estimate_GLM = 1;
+    space = 'T1w';
 end
 
 switch space
@@ -39,7 +33,7 @@ switch space
         smoothing_prefix = 's-8_'; %#ok<*NASGU>
         filter =  '.*space-MNI152NLin2009cAsym_desc-preproc.*.nii$';
     case 'T1w'
-        smoothing_prefix = 's-6_';
+        smoothing_prefix = '';
         filter =  '.*space-T1w_desc-preproc.*.nii$'; % for the files in native space
 end
 
@@ -65,7 +59,7 @@ folder_subj = cellstr(char({folder_subj.name}')); % turn subject folders into a 
 nb_subjects = numel(folder_subj);
 
 if debug_mode
-    nb_subjects = 1;
+    nb_subjects = 3;
 end
 
 % get metadata from BIDS
@@ -87,7 +81,7 @@ opt.suffix = filter;
 
 %% for each subject
 
-for isubj = 1 % 3:nb_subjects
+for isubj = 1%:nb_subjects
 
     fprintf('running %s\n', folder_subj{isubj});
 
