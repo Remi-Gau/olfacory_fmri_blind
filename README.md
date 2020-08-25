@@ -73,6 +73,20 @@ Additional olfacory ROIs are included for the the primary and secondary olfactor
 
 ### subfun
 
+## Content
+
+### inputs
+
+Olfactory ROIs were defined by 3 steps.
+First, we used the merged olfactory cortex network templates from Fjældstad et al. (2017) article available at https://www.flavourinstitute.dk/?page_id=400.
+With WFUPickAtlas toolbox, we created masks using the AAL atlas. For each regions (left and right) defined by Fjældstad et al. (2017), we generated a mask. We also generated three other masks (primary, secondary and olfactory cortex), which combined the respective regions described by Fjældstad et al. (2017).
+With MarsBaR toolbox, we combined Left and Right mOC templates. Then we combined each AAL mask with the mOC combined template in order to obtain an interjection. Those interjections are the ROIs.
+
+N.B. We didn't obtain any interjection for the Putamen (Left and Right), the right Caudate nucleus and the right Insula (Right) AAL regions.
+
+
+
+
 ##  2. <a name='Dockerimages'></a>Docker images
 
 | Image                                                  | Used version                |
