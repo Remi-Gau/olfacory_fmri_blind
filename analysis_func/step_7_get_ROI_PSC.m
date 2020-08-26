@@ -169,7 +169,7 @@ for i_subj = 1:nb_subjects
                 % sqve for this subject, ROI, GLM
                 name_save_file = fullfile(marsbar_save_folder, ...
                     [file '_' name_analysis_dir(cfg, space) '.mat']);
-                save(name_save_file, 'tc', 'psc', 'cfg', 'file');
+                save(name_save_file, 'tc', 'psc', 'cfg', 'file', 'dt');
 
             catch
 
@@ -185,46 +185,5 @@ for i_subj = 1:nb_subjects
         time_course{i_roi, i_GLM} = time_course{i_roi, i_GLM}(shuffle_subjs, :);
         percent_signal_change{i_GLM} = percent_signal_change{i_GLM}(shuffle_subjs);
     end
-
-end
-
-return
-
-%% Show fitted event time courses
-opt = get_option(opt);
-Colors = [ ...
-    opt.blnd_color / 255; ...
-    opt.sighted_color / 255];
-Colors_desat = Colors + (1 - Colors) * (1 - .3);
-
-black = [0 0 0];
-
-close all;
-figure;
-hold on;
-
-secs = [0:size(time_course{1}, 2) - 1] * dt;
-
-for i_roi = 1:size(roi_ls, 1)
-
-    figure(i_roi);
-
-    for i_group = 0:1
-
-        data = time_course{i_roi}(group_id == i_group, :);
-
-        to_plot = mean(data);
-        sem = std(data) / size(data, 1)^.5;
-
-        %     plot(secs, data, 'color', Colors_desat(i_group+1,:), 'linewidth', .5)
-
-        shadedErrorBar(secs, to_plot, sem, ...
-            {'color', Colors(i_group + 1, :), 'linewidth', 2}, 1);
-
-    end
-
-    title(['Time courses for V1'], 'Interpreter', 'none');
-    xlabel('Seconds');
-    ylabel('% signal change');
 
 end
