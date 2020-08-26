@@ -14,7 +14,7 @@ opt.k = 10;
 
 % contrast name / directory name / ROI for inclusive mask
 opt.ctrsts = { ...
-    'resp-03 + resp-12 > 0', '[resp-03 + resp-12] > baseline ', 'ROI-hand_Z_.1_k_10_space-MNI.nii'; ...
+    'resp-03 + resp-12 > 0', '[resp-03 + resp-12] > baseline', 'ROI-hand_Z_.1_k_10_space-MNI.nii'; ...
     'Euc-Left + Alm-Left + Euc-Right + Alm-Right > 0', 'all cdtion > baseline (in visual ROIS)', 'ROI-AllVisual_space-MNI.nii'; ...
     'Euc-Left + Alm-Left + Euc-Right + Alm-Right > 0', 'all cdtion > baseline (in olfactory ROIS)', 'ROI-olfactory_Z_.1_k_10_space-MNI.nii'; ...
     'Euc-Left + Alm-Left + Euc-Right + Alm-Right < 0', 'all < baseline - whole brain', []; ...
@@ -90,73 +90,73 @@ end
 
 %%
 for iGLM = 1:size(all_GLMs)
-
+    
     %% get configuration for this GLM
     cfg = get_configuration(all_GLMs, opt, iGLM);
-
+    
     % set output dir for this GLM configutation
     analysis_dir = name_analysis_dir(cfg, space);
     grp_lvl_dir = fullfile (output_dir, 'group', analysis_dir);
     mkdir(grp_lvl_dir);
-
+    
     contrasts_file_ls = struct('con_name', {}, 'con_file', {});
-
+    
     %% list the fields
     for isubj = 1:nb_subj
-
+        
         subj_lvl_dir = fullfile ( ...
             output_dir, folder_subj{isubj}, 'stats', analysis_dir);
-
+        
         fprintf('\nloading SPM.mat %s',  folder_subj{isubj});
         load(fullfile(subj_lvl_dir, 'SPM.mat'));
-
+        
         %% Stores names of the contrast images
         for iCtrst = 1:numel(contrast_ls)
-
+            
             contrasts_file_ls(isubj).con_name{iCtrst, 1} = ...
                 SPM.xCon(iCtrst).name;
-
+            
             contrasts_file_ls(isubj).con_file{iCtrst, 1} = ...
                 fullfile(subj_lvl_dir, SPM.xCon(iCtrst).Vcon.fname);
-
+            
             if ~exist(contrasts_file_ls(isubj).con_file{iCtrst, 1}, 'file')
                 error('file not found');
             end
-
+            
         end
-
+        
     end
-
+    
     for i_ttest = 1:size(opt.ctrsts, 1)
-
+        
         ctrsts = opt.ctrsts(i_ttest, 1);
-
+        
         disp('\n\n');
         disp(ctrsts);
-
+        
         subdir_name = opt.ctrsts{i_ttest, 2};
-
+        
         if isempty(opt.ctrsts{i_ttest, 3})
             mask = [];
         else
             mask = fullfile(code_dir, 'inputs', opt.ctrsts{i_ttest, 3});
         end
-
+        
         %% ttest
         for iGroup = 1:numel(opt.grp_name)
-
+            
             subj_to_include = find(group_id(1:nb_subj) == iGroup - 1);
             grp_name = opt.grp_name{iGroup};
-
+            
             % identify the right con images for each subject to bring to
             % the grp lvl as summary stat
-
+            
             [scans, con_names] = scans_for_grp_lvl(contrast_ls, ctrsts, contrasts_file_ls, subj_to_include);
-
+            
             disp(grp_name);
             disp(con_names);
             disp(scans');
-
+            
             matlabbatch = [];
             matlabbatch = set_ttest_batch(matlabbatch, ...
                 fullfile(grp_lvl_dir, grp_name), ...
@@ -164,30 +164,30 @@ for iGLM = 1:size(all_GLMs)
                 {subdir_name}, ...
                 {'>'}, ...
                 mask, opt);
-
-%             spm_jobman('run', matlabbatch)
-
+            
+            spm_jobman('run', matlabbatch)
+            
             % rename NIDM output file
-            %             NIDM_file = spm_select('FPList', ...
-            %                 matlabbatch{1}.spm.stats.factorial_design.dir{1}, ...
-            %                 '^spm.*.*nidm.*zip$');
-            %             [path, file, ext] = spm_fileparts(NIDM_file);
-            %             file = [grp_name, '_', strrep(ctrsts{1}, ' ', ''), '_', file]; %#ok<*AGROW>
-            %             movefile(NIDM_file, fullfile(path, [file ext]))
-
+%             NIDM_file = spm_select('FPList', ...
+%                 matlabbatch{1}.spm.stats.factorial_design.dir{1}, ...
+%                 '^spm.*.*nidm.*zip$');
+%             [path, file, ext] = spm_fileparts(NIDM_file);
+%             file = [grp_name, '_', strrep(ctrsts{1}, ' ', ''), '_', file]; %#ok<*AGROW>
+%             movefile(NIDM_file, fullfile(path, [file ext]))
+            
             clear scans;
         end
-
+        
         %% two sample ttest
         % identify the right con images for each subject to bring to
         % the grp lvl as summary stat
         for iGroup = 1:numel(opt.grp_name)
             subj_to_include = find(group_id(1:nb_subj) == iGroup - 1);
             [scans{iGroup, 1}, con_names] = scans_for_grp_lvl(contrast_ls, ctrsts, contrasts_file_ls, subj_to_include);
-
+            
             disp(con_names);
         end
-
+        
         % shuffle date from both groups to blind analysis
         if randomize
             tmp = cat(1, scans{1}', scans{2}');
@@ -196,32 +196,32 @@ for iGLM = 1:size(all_GLMs)
                 scans{iGroup} = cellstr(tmp(1:size(scans{iGroup}, 2), :))';
             end
         end
-
+        
         % display
         for iGroup = 1:numel(opt.grp_name)
             disp(scans{iGroup}');
         end
-
+        
         matlabbatch = [];
         matlabbatch = set_ttest_batch(matlabbatch, ...
             fullfile(grp_lvl_dir), ...
             scans, ...
             {subdir_name}, ...
-            {'>'}, ...
+            {'>', '<'}, ...
             mask, opt);
-
+        
         spm_jobman('run', matlabbatch);
-
+        
         % rename NIDM output file
-        NIDM_file = spm_select('FPList', ...
-            matlabbatch{1}.spm.stats.factorial_design.dir{1}, ...
-            '^spm.*.*nidm.*zip$');
-        [path, file, ext] = spm_fileparts(NIDM_file);
-        file = ['ts_ttest_', strrep(ctrsts{1}, ' ', ''), '_', file]; %#ok<*AGROW>
-        movefile(NIDM_file, fullfile(path, [file ext]));
-
+%         NIDM_file = spm_select('FPList', ...
+%             matlabbatch{1}.spm.stats.factorial_design.dir{1}, ...
+%             '^spm.*.*nidm.*zip$');
+%         [path, file, ext] = spm_fileparts(NIDM_file);
+%         file = ['ts_ttest_', strrep(ctrsts{1}, ' ', ''), '_', file]; %#ok<*AGROW>
+%         movefile(NIDM_file, fullfile(path, [file ext]));
+        
         clear scans;
-
+        
     end
-
+    
 end

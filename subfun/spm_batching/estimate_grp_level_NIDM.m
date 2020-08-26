@@ -45,8 +45,8 @@ function matlabbatch = estimate_grp_level_NIDM(matlabbatch, cmp, cdts, scans, ma
         if isempty(mask)
             matlabbatch{4}.spm.stats.results.conspec(iCmp).mask.none = 1;
         else
-            matlabbatch{4}.spm.stats.results.conspec.mask.image.name = {mask};
-            matlabbatch{4}.spm.stats.results.conspec.mask.image.mtype = 0;
+            matlabbatch{4}.spm.stats.results.conspec(iCmp).mask.image.name = {mask};
+            matlabbatch{4}.spm.stats.results.conspec(iCmp).mask.image.mtype = 0;
         end
 
     end
@@ -56,7 +56,7 @@ function matlabbatch = estimate_grp_level_NIDM(matlabbatch, cmp, cdts, scans, ma
     matlabbatch{4}.spm.stats.results.export{2}.nidm.modality = 'FMRI';
     matlabbatch{4}.spm.stats.results.export{2}.nidm.refspace = 'icbm';
     matlabbatch{4}.spm.stats.results.export{2}.nidm.group.nsubj = numel(scans);
-    matlabbatch{4}.spm.stats.results.export{2}.nidm.group.label = 'ctrl';
+    matlabbatch{4}.spm.stats.results.export{2}.nidm.group.label = 'ctrl_blind';
 
 end
 
